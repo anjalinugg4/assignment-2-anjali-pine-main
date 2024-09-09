@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Tokenizer {
     public List<String> processFile(String filePath) {
@@ -15,6 +17,7 @@ public class Tokenizer {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
+            line = "<s> " + line + " </s>";
             // Tokenize each line
             words.addAll(splitText(line));
             }
@@ -24,7 +27,8 @@ public class Tokenizer {
     catch (FileNotFoundException e) {
         System.out.println("File not found: " + filePath);
         }
-    return words;
+    List<String> replaced = getUnknown(words);
+    return replaced;
     }
 
 
@@ -37,11 +41,34 @@ public class Tokenizer {
         return tokenList;
     }
 
+    public List<String> getUnknown(List<String> words){
+        Set<String> set = new HashSet<>();
+        List<String> replaceUnknown = new ArrayList<>();
+        for (String word:words) {
+            if ((!word.equals("<s>")) && (!word.equals("</s>"))) {
+                if (!set.contains(word)) {
+                    replaceUnknown.add("<UNK>");
+                    set.add(word);
+                }
+                else {
+                    replaceUnknown.add(word);
+                }
+            }
+            else{
+                replaceUnknown.add(word);
+            }
+            
+        }
+        return replaceUnknown;
+    }
+
 
     public static void main(String[]args) {
         Tokenizer tokenizer = new Tokenizer();
+        // String filepath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test.txt";
         String filepath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/sentences";
         List<String> words = tokenizer.processFile(filepath);
+        
 
         for(String word:words){
             System.out.println(word);
