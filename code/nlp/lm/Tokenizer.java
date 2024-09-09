@@ -9,6 +9,7 @@ public class Tokenizer {
     public List<String> processFile(String filePath) {
     File file = new File(filePath);
     List<String> words = new ArrayList<>();
+    // comment
     // Try to read the file
     try {
         Scanner scanner = new Scanner(file);
