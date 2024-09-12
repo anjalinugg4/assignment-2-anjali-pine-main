@@ -12,6 +12,9 @@ import java.util.concurrent.atomic.DoubleAccumulator;
 
 public class LambdaLMModel implements LMModel {
     protected static HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
+    protected static HashMap<String, Double> unigramCount = new HashMap<>();
+    protected static HashMap<String,Integer> wordCount = new HashMap<>();
+    protected static int totalWords = 0;
     protected HashMap<String,Integer> sumWords;
     String filename;
     double lambda;
@@ -20,14 +23,15 @@ public class LambdaLMModel implements LMModel {
         this.filename = filename;
         this.lambda = lambda;  // Initialize bigramCount as a new HashMap
         this.sumWords = new HashMap<>(); 
+
     }
 
     /**
      * get unigram probabilities of every word in text file
      * @param words
      */
-    public HashMap<String,Double> findUnigram(List<String>words) {
-        HashMap<String,Integer> wordCount = new HashMap<>();
+    public void findUnigram(List<String>words) {
+        
         for (String word:words){
             if (wordCount.containsKey(word)) {
                 wordCount.put(word, wordCount.get(word) + 1);
@@ -37,22 +41,21 @@ public class LambdaLMModel implements LMModel {
                 wordCount.put(word, 1);
             }
         }
-        int totalWords = 0;
+
         for (int count : wordCount.values()) {
             totalWords += count;
         }
 
         // New HashMap to store words and their probabilities
-        HashMap<String, Double> wordProbability = new HashMap<>();
+        
 
         // Calculate the probability for each word and store it in the new HashMap
         for (HashMap.Entry<String, Integer> entry : wordCount.entrySet()) {
             String word = entry.getKey();
             int count = entry.getValue();
             double probability = (double) count / totalWords;  // Calculate probability
-            wordProbability.put(word, probability);  // Add word and its probability
+            unigramCount.put(word, probability);  // Add word and its probability
         }
-        return wordProbability;
     }
 
 
@@ -149,10 +152,39 @@ public class LambdaLMModel implements LMModel {
         System.out.println(allBigrams);
         Integer sumBigram = sumWords.get(first);
         System.out.println(sumBigram);
-        Double numerator = (secondWords * lambda);
+        Double numerator = (secondWords + lambda);
         Double denominator = (allBigrams * lambda) + sumBigram;
         return (numerator / denominator);
     }
+    public double getUnigramIndividual (String word) {
+        return wordCount.get(word)/totalWords;
+    }
+    public double bigramProbDiscount(String first, String second, double discount) {
+        // find reserved mass
+        Integer numFollows = bigramCount.get(first).get(second);
+        Integer allBigrams = bigramCount.get(first).size();
+
+        Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
+        List<String> words = new ArrayList<>(bigramCount.get(first).keySet());
+        findUnigram(words);
+        Double sumUnigram = 0.0; 
+        for(Double uni: unigramCount.values()) {
+            sumUnigram += uni;
+        }
+
+        Double alpha = (double)(reservedMass)/(1 - sumUnigram);
+        Double multAlpha = alpha * getUnigramIndividual(first);
+
+        if (bigramCount.get(first).get(second) != null) {
+            Integer countFirstSecond = bigramCount.get(first).get(second);
+            Integer countSecond = wordCount.get(second);
+
+            return (double)(countFirstSecond - discount)/countSecond;
+        }
+            return multAlpha;
+
+    }
+
 
     public static void writeToFile(List<String> words, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
@@ -168,13 +200,13 @@ public class LambdaLMModel implements LMModel {
     }
 
     public static void main(String[] args) {
-        LambdaLMModel model = new LambdaLMModel("./././data/processed_output1.txt", 0.0);
         Tokenizer token = new Tokenizer();
         
         // Process the file to get the list of words
-        List<String> words = token.processFile("./././data/test1.txt");
-        String outputFilePath = "./././data/processed_output1.txt";
-        // C:\Users\pinet\cs159\assignment-2-anjali-pine\assignment-2-anjali-pine-main\code\nlp\lm\LambdaLMModel.java
+        List<String> words = token.processFile("/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test1.txt");
+        String outputFilePath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/processed_output1.txt";
+        LambdaLMModel model = new LambdaLMModel(outputFilePath, 0.0);
+
         // Call the method to write the words to the new file
         writeToFile(words, outputFilePath);
         // Build the bigram counts
@@ -182,7 +214,8 @@ public class LambdaLMModel implements LMModel {
         // System.out.println(model.getBigramProb(words.get(1), words.get(3)));  
         // Print out the bigram counts for verification
         //model.printBigramCounts();
-        System.out.println(model.bigramProbLambda(words.get(1), words.get(3), 1));
+        // System.out.println(model.bigramProbLambda(words.get(1), words.get(3), 1));
+        System.out.println(model.bigramProbDiscount(words.get(1), words.get(3), 0.5));
         }   
         
 }
