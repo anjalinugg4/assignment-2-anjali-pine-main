@@ -168,12 +168,13 @@ public class LambdaLMModel implements LMModel {
     }
 
     public static void main(String[] args) {
-        LambdaLMModel model = new LambdaLMModel("C:\\Users\\pinet\\cs159\\assignment-2-anjali-pine\\assignment-2-anjali-pine-main\\data\\test1.txt", 0.0);
+        LambdaLMModel model = new LambdaLMModel("./././data/processed_output1.txt", 0.0);
         Tokenizer token = new Tokenizer();
         
         // Process the file to get the list of words
-        List<String> words = token.processFile("C:\\Users\\pinet\\cs159\\assignment-2-anjali-pine\\assignment-2-anjali-pine-main\\data\\test1.txt");
-        String outputFilePath = "C:\\Users\\pinet\\cs159\\assignment-2-anjali-pine\\assignment-2-anjali-pine-main\\data\\processed_output1.txt";
+        List<String> words = token.processFile("./././data/test1.txt");
+        String outputFilePath = "./././data/processed_output1.txt";
+        // C:\Users\pinet\cs159\assignment-2-anjali-pine\assignment-2-anjali-pine-main\code\nlp\lm\LambdaLMModel.java
         // Call the method to write the words to the new file
         writeToFile(words, outputFilePath);
         // Build the bigram counts
