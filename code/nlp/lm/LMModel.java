@@ -4,7 +4,7 @@ import java.util.ArrayList;
 /**
  * An interface for generic bigram language models
  * 
- * @author Dave Kauchak
+ * @author Anjali Nuggehalli 
  *
  */
 public interface LMModel {

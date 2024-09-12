@@ -10,14 +10,14 @@ import java.util.Set;
 public class Tokenizer {
     public List<String> processFile(String filePath) {
     File file = new File(filePath);
-    List<String> words = new ArrayList<>();
+    final List<String> words = new ArrayList<>();
     // comment
     // Try to read the file
     try {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            line = "<s> " + line + " </s>";
+            // line = "<s> " + line + " </s>";
             // Tokenize each line
             words.addAll(splitText(line));
             }
@@ -68,6 +68,7 @@ public class Tokenizer {
         // String filepath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test.txt";
         String filepath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/sentences";
         List<String> words = tokenizer.processFile(filepath);
+
         
 
         for(String word:words){
