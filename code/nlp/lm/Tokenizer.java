@@ -17,7 +17,7 @@ public class Tokenizer {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            // line = "<s> " + line + " </s>";
+            line = "<s> " + line + " </s>";
             // Tokenize each line
             words.addAll(splitText(line));
             }
