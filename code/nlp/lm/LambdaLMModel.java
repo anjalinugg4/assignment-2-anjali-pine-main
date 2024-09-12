@@ -11,15 +11,14 @@ import java.util.Set;
 import java.util.concurrent.atomic.DoubleAccumulator;
 
 public class LambdaLMModel implements LMModel {
-    protected HashMap<String, HashMap<String, Integer>> bigramCount;
+    protected static HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
     protected HashMap<String,Integer> sumWords;
     String filename;
     double lambda;
 
     LambdaLMModel(String filename, double lambda) {
         this.filename = filename;
-        this.lambda = lambda;
-        this.bigramCount = new HashMap<>();  // Initialize bigramCount as a new HashMap
+        this.lambda = lambda;  // Initialize bigramCount as a new HashMap
         this.sumWords = new HashMap<>(); 
     }
 
@@ -135,24 +134,26 @@ public class LambdaLMModel implements LMModel {
     }
 
     public double bigramProbLambda(String first, String second, double lambda) {
-        
+        HashMap <String, Integer> secondHash = bigramCount.get(first); 
+        if (secondHash.get(second) == null) {
+            return 0.0;
+        }
+        //gets the bigram count of (first, second)
+        Integer bCount = secondHash.get(second); 
+        if (bCount == null) {
+            return 0.0;
+        }
+        Integer secondWords = bigramCount.get(first).get(second);
+        System.out.println(secondWords);
+        Integer allBigrams = bigramCount.get(first).size();
+        System.out.println(allBigrams);
+        Integer sumBigram = sumWords.get(first);
+        System.out.println(sumBigram);
+        Double numerator = (secondWords * lambda);
+        Double denominator = (allBigrams * lambda) + sumBigram;
+        return (numerator / denominator);
     }
 
-    public static void main(String[] args) {
-        LambdaLMModel model = new LambdaLMModel("/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test1.txt", 0.0);
-        Tokenizer token = new Tokenizer();
-        
-        // Process the file to get the list of words
-        List<String> words = token.processFile("/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test1.txt");
-        String outputFilePath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/processed_output1.txt";
-        // Call the method to write the words to the new file
-        writeToFile(words, outputFilePath);
-        // Build the bigram counts
-        model.bigramCounts(words);
-        System.out.print(model.getBigramProb(words.get(1), words.get(3)));  
-        // Print out the bigram counts for verification
-        //model.printBigramCounts();
-        }
     public static void writeToFile(List<String> words, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             // Write each word from the list to the file
@@ -165,7 +166,24 @@ public class LambdaLMModel implements LMModel {
             System.err.println("Error writing to file: " + e.getMessage());
         }
     }
-    
+
+    public static void main(String[] args) {
+        LambdaLMModel model = new LambdaLMModel("C:\\Users\\pinet\\cs159\\assignment-2-anjali-pine\\assignment-2-anjali-pine-main\\data\\test1.txt", 0.0);
+        Tokenizer token = new Tokenizer();
+        
+        // Process the file to get the list of words
+        List<String> words = token.processFile("C:\\Users\\pinet\\cs159\\assignment-2-anjali-pine\\assignment-2-anjali-pine-main\\data\\test1.txt");
+        String outputFilePath = "C:\\Users\\pinet\\cs159\\assignment-2-anjali-pine\\assignment-2-anjali-pine-main\\data\\processed_output1.txt";
+        // Call the method to write the words to the new file
+        writeToFile(words, outputFilePath);
+        // Build the bigram counts
+        model.bigramCounts(words);
+        // System.out.println(model.getBigramProb(words.get(1), words.get(3)));  
+        // Print out the bigram counts for verification
+        //model.printBigramCounts();
+        System.out.println(model.bigramProbLambda(words.get(1), words.get(3), 1));
+        }   
+        
 }
 	
 
