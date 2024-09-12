@@ -203,8 +203,10 @@ public class LambdaLMModel implements LMModel {
         Tokenizer token = new Tokenizer();
         
         // Process the file to get the list of words
-        List<String> words = token.processFile("/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test1.txt");
-        String outputFilePath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/processed_output1.txt";
+        // List<String> words = token.processFile("/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test1.txt");
+        // String outputFilePath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/processed_output1.txt";
+        List<String> words = token.processFile("./././data/test1.txt");
+        String outputFilePath = "./././data/processed_output1.txt";
         LambdaLMModel model = new LambdaLMModel(outputFilePath, 0.0);
 
         // Call the method to write the words to the new file
