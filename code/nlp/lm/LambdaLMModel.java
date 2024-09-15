@@ -31,7 +31,7 @@ public class LambdaLMModel implements LMModel {
      * @param words
      */
     public void findUnigram(List<String>words) {
-        
+        totalWords = 0;
         for (String word:words){
             if (wordCount.containsKey(word)) {
                 wordCount.put(word, wordCount.get(word) + 1);
@@ -132,7 +132,7 @@ public class LambdaLMModel implements LMModel {
         // Iterate through the outer HashMap (first word)
         for (String first : unigramCount.keySet()) {
             System.out.println("First Word: \"" + first + "\"");
-            System.out.printf("   %-10s: %d\n", first, unigramCount.get(first));
+            System.out.printf("    %-10s: %.2f\n", first, unigramCount.get(first));
             // Add a separator line for readability between bigram groups
             System.out.println("---------------------------");
         }
@@ -178,12 +178,12 @@ public class LambdaLMModel implements LMModel {
             return 0.0;
         }
         Integer numFollows = bigramCount.get(first).get(second);
-        Integer allBigrams = bigramCount.get(first).size();
+        Integer allBigrams = sumWords.get(first);
 
         Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
         List<String> words = new ArrayList<>(bigramCount.get(first).keySet());
-        findUnigram(words);
-        printUnigramCounts();
+
+        // printUnigramCounts();
         Double sumUnigram = 0.0; 
         for(Double uni: unigramCount.values()) {
             sumUnigram += uni;
@@ -228,14 +228,19 @@ public class LambdaLMModel implements LMModel {
 
         // Call the method to write the words to the new file
         writeToFile(words, outputFilePath);
+
+
         // Build the bigram counts
         model.bigramCounts(words);
         // System.out.println(model.getBigramProb(words.get(1), words.get(3)));  
         // Print out the bigram counts for verification
         //model.printBigramCounts();
         // System.out.println(model.bigramProbLambda(words.get(1), words.get(3), 1));
-
-        System.out.println(model.bigramProbDiscount(words.get(1), words.get(3), 0.5));
+        String a = words.get(1);
+        String b = words.get(3);
+        model.findUnigram(words);
+        printUnigramCounts();
+        System.out.println(model.bigramProbDiscount(a, b, 0.5));
         }   
         
 }
