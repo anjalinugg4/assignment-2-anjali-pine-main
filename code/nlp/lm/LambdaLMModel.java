@@ -181,7 +181,6 @@ public class LambdaLMModel implements LMModel {
         Integer allBigrams = sumWords.get(first);
 
         Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
-        List<String> words = new ArrayList<>(bigramCount.get(first).keySet());
 
         // printUnigramCounts();
         Double sumUnigram = 0.0; 
