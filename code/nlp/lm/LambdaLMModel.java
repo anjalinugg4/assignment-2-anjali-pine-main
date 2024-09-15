@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.atomic.DoubleAccumulator;
 
-public class LambdaLMModel implements LMModel {
+
+public class LambdaLMModel extends Tokenizer implements LMModel{
     protected static HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
     protected static HashMap<String, Double> unigramCount = new HashMap<>();
     protected static HashMap<String,Integer> wordCount = new HashMap<>();
@@ -66,7 +67,19 @@ public class LambdaLMModel implements LMModel {
 	 * @return the log probability
 	 */
 	public double logProb(ArrayList<String> sentWords) {
-        return 0.0;
+        Double sumLogProb = 0.0;
+
+        for (int i = 0; i < sentWords.size() - 1; i ++) {
+            String first = sentWords.get(i);
+            String second = sentWords.get(i + 1);
+            Double bigramProb = getBigramProb(first, second);
+            Double logProb = 1e-10; 
+            if (bigramProb != 0.0) {
+                logProb = Math.log10(bigramProb);
+            }
+            sumLogProb += logProb;
+        }
+        return sumLogProb;
     }
 	/**
 	 * Returns p(second | first)
@@ -146,7 +159,12 @@ public class LambdaLMModel implements LMModel {
 	 * @return the perplexity of the text in file based on the LM
 	 */
 	public double getPerplexity(String filename) {
-        return 0.0;
+        ArrayList<String>words = processFile(filename);
+        Integer numWords = words.size();
+
+        Double perplexity = -1 * (logProb(words)) / numWords;
+
+        return perplexity;
     }
 
     public double bigramProbLambda(String first, String second, double lambda) {

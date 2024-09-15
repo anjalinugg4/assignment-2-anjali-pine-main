@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Tokenizer {
-    public List<String> processFile(String filePath) {
+    public ArrayList<String> processFile(String filePath) {
     File file = new File(filePath);
     final List<String> words = new ArrayList<>();
     // comment
@@ -27,23 +27,23 @@ public class Tokenizer {
     catch (FileNotFoundException e) {
         System.out.println("File not found: " + filePath);
         }
-    List<String> replaced = getUnknown(words);
+    ArrayList<String> replaced = getUnknown(words);
     return replaced;
     }
 
 
-    public List<String> splitText(String text) {
+    public ArrayList<String> splitText(String text) {
         String [] tokens = text.split("\\s+"); 
-        List<String> tokenList = new ArrayList<>();
+        ArrayList<String> tokenList = new ArrayList<>();
         for (String token:tokens) {
             tokenList.add(token);
         }
         return tokenList;
     }
 
-    public List<String> getUnknown(List<String> words){
+    public ArrayList<String> getUnknown(List<String> words){
         Set<String> set = new HashSet<>();
-        List<String> replaceUnknown = new ArrayList<>();
+        ArrayList<String> replaceUnknown = new ArrayList<>();
         for (String word:words) {
             if ((!word.equals("<s>")) && (!word.equals("</s>"))) {
                 if (!set.contains(word)) {
