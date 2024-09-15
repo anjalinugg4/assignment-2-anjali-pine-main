@@ -24,7 +24,6 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         this.filename = filename;
         this.lambda = lambda;  // Initialize bigramCount as a new HashMap
         this.sumWords = new HashMap<>(); 
-
     }
 
     /**
@@ -79,6 +78,8 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             }
             sumLogProb += logProb;
         }
+        printBigramCounts();
+        System.out.println(sumLogProb);
         return sumLogProb;
     }
 	/**
@@ -162,9 +163,14 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         ArrayList<String>words = processFile(filename);
         Integer numWords = words.size();
 
-        Double perplexity = -1 * (logProb(words)) / numWords;
+        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / numWords));
 
         return perplexity;
+    }
+
+    
+    public double getUnigramIndividual (String word) {
+        return wordCount.get(word)/totalWords;
     }
 
     public double bigramProbLambda(String first, String second, double lambda) {
@@ -178,18 +184,14 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             return 0.0;
         }
         Integer secondWords = bigramCount.get(first).get(second);
-        System.out.println(secondWords);
         Integer allBigrams = bigramCount.get(first).size();
-        System.out.println(allBigrams);
         Integer sumBigram = sumWords.get(first);
-        System.out.println(sumBigram);
         Double numerator = (secondWords + lambda);
         Double denominator = (allBigrams * lambda) + sumBigram;
         return (numerator / denominator);
     }
-    public double getUnigramIndividual (String word) {
-        return wordCount.get(word)/totalWords;
-    }
+
+
     public double bigramProbDiscount(String first, String second, double discount) {
         // find reserved mass
         if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
@@ -256,10 +258,10 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         String a = words.get(1);
         String b = words.get(3);
         model.findUnigram(words);
-        printUnigramCounts();
-        System.out.println(model.bigramProbDiscount(a, b, 0.5));
-        }   
-        
+        // printUnigramCounts();
+        // System.out.println(model.bigramProbDiscount(a, b, 0.5));
+        System.out.println(model.getPerplexity("./././data/test1.txt"));
+    }       
 }
 	
 
