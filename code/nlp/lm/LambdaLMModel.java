@@ -67,19 +67,31 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 	 */
 	public double logProb(ArrayList<String> sentWords) {
         Double sumLogProb = 0.0;
+        Set<String> uniqueBigramProbs = new HashSet<>();
 
-        for (int i = 0; i < sentWords.size() - 1; i ++) {
+        for (int i = 0; i < sentWords.size() - 1; i++) {
             String first = sentWords.get(i);
             String second = sentWords.get(i + 1);
             Double bigramProb = getBigramProb(first, second);
-            System.out.println("Bigram: (" + first + ", " + second + ")");
-            System.out.println("Bigram Probability P(" + second + " | " + first + "): " + bigramProb);
+
+
             Double logProb = 1e-10; 
             if (bigramProb != 0.0) {
                 logProb = Math.log10(bigramProb);
             }
-            sumLogProb += logProb;
+            // Create a string representing the bigram and its probability
+            String bigramProbString = "Bigram: (" + first + ", " + second + ") - Probability: " + bigramProb;
+    
+            // Only print if the bigram-probability pair is not already in the set
+            if (uniqueBigramProbs.add(bigramProbString)) {
+                // It was successfully added to the set, so it's unique
+                sumLogProb += logProb;
+                System.out.println(bigramProbString);
+            }
+
+
         }
+        System.out.println("Log Prob:" + sumLogProb);
         return sumLogProb;
     }
 	/**
@@ -239,29 +251,16 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
     public static void main(String[] args) {
         Tokenizer token = new Tokenizer();
         
-        // Process the file to get the list of words
-        // List<String> words = token.processFile("/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/test1.txt");
-        // String outputFilePath = "/Users/anjalinuggehalli/Desktop/assignment-2-anjali-pine-main/data/processed_output1.txt";
         List<String> words = token.processFile("./././data/test1.txt");
         String outputFilePath = "./././data/processed_output1.txt";
         LambdaLMModel model = new LambdaLMModel(outputFilePath, 0.0);
 
-        // Call the method to write the words to the new file
         writeToFile(words, outputFilePath);
-
-
-        // Build the bigram counts
         model.bigramCounts(words);
-        // System.out.println(model.getBigramProb(words.get(1), words.get(3)));  
-        // Print out the bigram counts for verification
-        //model.printBigramCounts();
-        // System.out.println(model.bigramProbLambda(words.get(1), words.get(3), 1));
-        String a = words.get(1);
-        String b = words.get(3);
         model.findUnigram(words);
-        // printUnigramCounts();
-        // System.out.println(model.bigramProbDiscount(a, b, 0.5));
         System.out.println(model.getPerplexity("./././data/test1.txt"));
+
+
     }       
 }
 	
