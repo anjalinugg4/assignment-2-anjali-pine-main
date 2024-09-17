@@ -10,14 +10,14 @@ import java.util.Set;
 public class Tokenizer {
     public ArrayList<String> processFile(String filePath) {
     File file = new File(filePath);
-    final List<String> words = new ArrayList<>();
+    ArrayList<String> words = new ArrayList<>();
     // comment
     // Try to read the file
     try {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-            // line = "<s> " + line + " </s>";
+            line = "<s> " + line + " </s>";
             // Tokenize each line
             words.addAll(splitText(line));
             }

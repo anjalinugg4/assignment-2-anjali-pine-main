@@ -24,6 +24,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         this.filename = filename;
         this.lambda = lambda;  // Initialize bigramCount as a new HashMap
         this.sumWords = new HashMap<>(); 
+
     }
 
     /**
@@ -249,6 +250,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
     }
 
     public static void main(String[] args) {
+
         Tokenizer token = new Tokenizer();
         
         List<String> words = token.processFile("./././data/test1.txt");
