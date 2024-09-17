@@ -34,36 +34,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     }
 
 
-    
-    public double bigramProbDiscount(String first, String second, double discount) {
-        // find reserved mass
-        if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
-            return 0.0;
-        }
-        Integer numFollows = bigramCount.get(first).get(second);
-        Integer allBigrams = sumWords.get(first);
-
-        Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
-
-        // printUnigramCounts();
-        Double sumUnigram = 0.0; 
-        for(Double uni: unigramCount.values()) {
-            sumUnigram += uni;
-        }
-
-        Double alpha = (double)(reservedMass)/(1 - sumUnigram);
-        Double multAlpha = alpha * getUnigramIndividual(first);
-
-        if (bigramCount.get(first).containsKey(second)) {
-            Integer countFirstSecond = bigramCount.get(first).get(second);
-            Integer countSecond = wordCount.get(second);
-
-            return (double)(countFirstSecond - discount)/countSecond;
-        }
-            return multAlpha;
-
-    }
-
     // HELPER FUNCTIONS!!!!
     // ******************************************************************** //
 
@@ -141,17 +111,31 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @return the probability of the second word given the first word (as a probability)
 	 */
 	public double getBigramProb(String first, String second) {
-        HashMap <String, Integer> secondHash = bigramCount.get(first); 
-        if (secondHash.get(second) == null) {
+        // find reserved mass
+        if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
             return 0.0;
         }
-        //gets the bigram count of (first, second)
-        Integer bCount = secondHash.get(second); 
-        if (bCount == null) {
-            return 0.0;
+        Integer numFollows = bigramCount.get(first).get(second);
+        Integer allBigrams = sumWords.get(first);
+
+        Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
+
+        // printUnigramCounts();
+        Double sumUnigram = 0.0; 
+        for(Double uni: unigramCount.values()) {
+            sumUnigram += uni;
         }
-        Integer sumBigram = sumWords.get(first);
-        return ((double)bCount / (double)sumBigram);
+
+        Double alpha = (double)(reservedMass)/(1 - sumUnigram);
+        Double multAlpha = alpha * getUnigramIndividual(first);
+
+        if (bigramCount.get(first).containsKey(second)) {
+            Integer countFirstSecond = bigramCount.get(first).get(second);
+            Integer countSecond = wordCount.get(second);
+
+            return (double)(countFirstSecond - discount)/countSecond;
+        }
+            return multAlpha;
     }
         
     public void bigramCounts(List<String>words) {
@@ -242,10 +226,10 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     public static void main(String[] args) {
         String filepath = "./././data/development.txt";
 
-        DiscountLMModel model1 = new DiscountLMModel(filepath, 0.1);
-        DiscountLMModel model2 = new DiscountLMModel(filepath, 0.01);
-        DiscountLMModel model3 = new DiscountLMModel(filepath, 0.001);
-        DiscountLMModel model4 = new DiscountLMModel(filepath, 0.0001);
+        DiscountLMModel model1 = new DiscountLMModel(filepath, 0.99);
+        DiscountLMModel model2 = new DiscountLMModel(filepath, 0.9);
+        DiscountLMModel model3 = new DiscountLMModel(filepath, 0.75);
+        DiscountLMModel model4 = new DiscountLMModel(filepath, 0.5);
 
         System.out.println("Discount Perplexity");
         System.out.println("-------------------------------");
