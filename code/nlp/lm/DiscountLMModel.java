@@ -10,49 +10,94 @@ import java.util.HashMap;
 import java.util.Set;
 
 
-public class LambdaLMModel extends Tokenizer implements LMModel{
+public class DiscountLMModel extends Tokenizer implements LMModel{
     protected static HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
     protected static HashMap<String, Double> unigramCount = new HashMap<>();
     protected static HashMap<String,Integer> wordCount = new HashMap<>();
     protected static int totalWords = 0;
     protected HashMap<String,Integer> sumWords;
     String filename;
-    double lambda;
+    double discount;
 
-    LambdaLMModel(String filename, double lambda) {
+    DiscountLMModel(String filename, double discount) {
         this.filename = filename;
-        this.lambda = lambda;  // Initialize bigramCount as a new HashMap
+        this.discount = discount;  // Initialize bigramCount as a new HashMap
         this.sumWords = new HashMap<>(); 
 
         // tokenize
         ArrayList<String> words = processFile(filename);
         // take bigram count
         bigramCounts(words);
-    }
 
-    public double bigramProbLambda(String first, String second, double lambda) {
-        HashMap <String, Integer> secondHash = bigramCount.get(first); 
-        if (secondHash.get(second) == null) {
-            return 0.0;
-        }
-        //gets the bigram count of (first, second)
-        Integer bCount = secondHash.get(second); 
-        if (bCount == null) {
-            return 0.0;
-        }
-        Integer secondWords = bigramCount.get(first).get(second);
-        Integer allBigrams = bigramCount.get(first).size();
-        Integer sumBigram = sumWords.get(first);
-        Double numerator = (secondWords + lambda);
-        Double denominator = (allBigrams * lambda) + sumBigram;
-        return (numerator / denominator);
     }
 
 
+    
+    public double bigramProbDiscount(String first, String second, double discount) {
+        // find reserved mass
+        if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
+            return 0.0;
+        }
+        Integer numFollows = bigramCount.get(first).get(second);
+        Integer allBigrams = sumWords.get(first);
+
+        Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
+
+        // printUnigramCounts();
+        Double sumUnigram = 0.0; 
+        for(Double uni: unigramCount.values()) {
+            sumUnigram += uni;
+        }
+
+        Double alpha = (double)(reservedMass)/(1 - sumUnigram);
+        Double multAlpha = alpha * getUnigramIndividual(first);
+
+        if (bigramCount.get(first).containsKey(second)) {
+            Integer countFirstSecond = bigramCount.get(first).get(second);
+            Integer countSecond = wordCount.get(second);
+
+            return (double)(countFirstSecond - discount)/countSecond;
+        }
+            return multAlpha;
+
+    }
 
     // HELPER FUNCTIONS!!!!
     // ******************************************************************** //
-    
+
+    /**
+     * get unigram probabilities of every word in text file
+     * @param words
+     */
+    public void findUnigram(List<String>words) {
+        totalWords = 0;
+        for (String word:words){
+            if (wordCount.containsKey(word)) {
+                wordCount.put(word, wordCount.get(word) + 1);
+            } 
+            // If the word is not in the map, add it with a count of 1
+            else {
+                wordCount.put(word, 1);
+            }
+        }
+
+        for (int count : wordCount.values()) {
+            totalWords += count;
+        }
+
+        // New HashMap to store words and their probabilities
+        
+
+        // Calculate the probability for each word and store it in the new HashMap
+        for (HashMap.Entry<String, Integer> entry : wordCount.entrySet()) {
+            String word = entry.getKey();
+            int count = entry.getValue();
+            double probability = (double) count / totalWords;  // Calculate probability
+            unigramCount.put(word, probability);  // Add word and its probability
+        }
+    }
+
+
     /**
 	 * Given a sentence, return the log of the probability of the sentence based on the LM.
 	 * 
@@ -144,6 +189,19 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         }
     }
 
+    public static void printUnigramCounts() {
+        System.out.println("Unigram Counts:");
+        System.out.println("==============");
+    
+        // Iterate through the outer HashMap (first word)
+        for (String first : unigramCount.keySet()) {
+            System.out.println("First Word: \"" + first + "\"");
+            System.out.printf("    %-10s: %.2f\n", first, unigramCount.get(first));
+            // Add a separator line for readability between bigram groups
+            System.out.println("---------------------------");
+        }
+    }
+
 	/**
 	 * Given a text file, calculate the perplexity of the text file, that is the negative average per word log
 	 * probability
@@ -164,6 +222,8 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         return wordCount.get(word)/totalWords;
     }
 
+
+
     public static void writeToFile(List<String> words, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             // Write each word from the list to the file
@@ -179,17 +239,16 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
     // ******************************************************************** //
 
-
-
     public static void main(String[] args) {
         Tokenizer token = new Tokenizer();
         
         List<String> words = token.processFile("./././data/test1.txt");
         String outputFilePath = "./././data/processed_output1.txt";
-        LambdaLMModel model = new LambdaLMModel(outputFilePath, 0.0);
+        DiscountLMModel model = new DiscountLMModel(outputFilePath, 0.0);
 
         writeToFile(words, outputFilePath);
         model.bigramCounts(words);
+        model.findUnigram(words);
         System.out.println(model.getPerplexity("./././data/test1.txt"));
 
 
