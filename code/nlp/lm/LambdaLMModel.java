@@ -78,8 +78,6 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             }
             sumLogProb += logProb;
         }
-        printBigramCounts();
-        System.out.println(sumLogProb);
         return sumLogProb;
     }
 	/**
