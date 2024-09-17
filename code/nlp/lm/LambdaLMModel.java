@@ -11,10 +11,10 @@ import java.util.Set;
 
 
 public class LambdaLMModel extends Tokenizer implements LMModel{
-    protected static HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
-    protected static HashMap<String,Integer> wordCount = new HashMap<>();
-    protected static int totalWords = 0;
-    protected HashMap<String,Integer> sumWords;
+    HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
+    HashMap<String,Integer> wordCount = new HashMap<>();
+    int totalWords = 0;
+    HashMap<String,Integer> sumWords;
     String filename;
     double lambda;
 
@@ -142,7 +142,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         return perplexity;
     }
 
-    public static void writeToFile(List<String> words, String outputFilePath) {
+    public void writeToFile(List<String> words, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             // Write each word from the list to the file
             for (String word : words) {
@@ -166,6 +166,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         LambdaLMModel model2 = new LambdaLMModel(filepath, 0.01);
         LambdaLMModel model3 = new LambdaLMModel(filepath, 0.001);
         LambdaLMModel model4 = new LambdaLMModel(filepath, 0.0001);
+        
         System.out.println("Lambda Perplexity");
         System.out.println("-------------------------------");
         System.out.println("model 1: " + model1.getPerplexity(filepath));
