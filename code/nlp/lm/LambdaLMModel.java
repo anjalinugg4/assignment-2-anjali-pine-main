@@ -72,6 +72,8 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             String first = sentWords.get(i);
             String second = sentWords.get(i + 1);
             Double bigramProb = getBigramProb(first, second);
+            System.out.println("Bigram: (" + first + ", " + second + ")");
+            System.out.println("Bigram Probability P(" + second + " | " + first + "): " + bigramProb);
             Double logProb = 1e-10; 
             if (bigramProb != 0.0) {
                 logProb = Math.log10(bigramProb);
@@ -149,6 +151,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             System.out.println("---------------------------");
         }
     }
+
     
 	/**
 	 * Given a text file, calculate the perplexity of the text file, that is the negative average per word log
