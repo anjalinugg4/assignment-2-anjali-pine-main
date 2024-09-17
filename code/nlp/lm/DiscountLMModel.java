@@ -11,10 +11,10 @@ import java.util.Set;
 
 
 public class DiscountLMModel extends Tokenizer implements LMModel{
-    protected static HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
-    protected static HashMap<String, Double> unigramCount = new HashMap<>();
-    protected static HashMap<String,Integer> wordCount = new HashMap<>();
-    protected static int totalWords = 0;
+    HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
+    HashMap<String, Double> unigramCount = new HashMap<>();
+    HashMap<String,Integer> wordCount = new HashMap<>();
+    int totalWords = 0;
     protected HashMap<String,Integer> sumWords;
     String filename;
     double discount;
@@ -22,12 +22,14 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     DiscountLMModel(String filename, double discount) {
         this.filename = filename;
         this.discount = discount;  // Initialize bigramCount as a new HashMap
-        this.sumWords = new HashMap<>(); 
+        this.sumWords = new HashMap<>();
 
         // tokenize
         ArrayList<String> words = processFile(filename);
-        // take bigram count
+
+        // take bigram and unigram count
         bigramCounts(words);
+        findUnigram(words); 
 
     }
 
@@ -125,12 +127,10 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
             if (uniqueBigramProbs.add(bigramProbString)) {
                 // It was successfully added to the set, so it's unique
                 sumLogProb += logProb;
-                System.out.println(bigramProbString);
             }
 
 
         }
-        System.out.println("Log Prob:" + sumLogProb);
         return sumLogProb;
     }
 	/**
@@ -189,7 +189,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
     }
 
-    public static void printUnigramCounts() {
+    public void printUnigramCounts() {
         System.out.println("Unigram Counts:");
         System.out.println("==============");
     
@@ -240,16 +240,19 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     // ******************************************************************** //
 
     public static void main(String[] args) {
-        Tokenizer token = new Tokenizer();
-        
-        List<String> words = token.processFile("./././data/test1.txt");
-        String outputFilePath = "./././data/processed_output1.txt";
-        DiscountLMModel model = new DiscountLMModel(outputFilePath, 0.0);
+        String filepath = "./././data/development.txt";
 
-        writeToFile(words, outputFilePath);
-        model.bigramCounts(words);
-        model.findUnigram(words);
-        System.out.println(model.getPerplexity("./././data/test1.txt"));
+        DiscountLMModel model1 = new DiscountLMModel(filepath, 0.1);
+        DiscountLMModel model2 = new DiscountLMModel(filepath, 0.01);
+        DiscountLMModel model3 = new DiscountLMModel(filepath, 0.001);
+        DiscountLMModel model4 = new DiscountLMModel(filepath, 0.0001);
+
+        System.out.println("Discount Perplexity");
+        System.out.println("-------------------------------");
+        System.out.println("model 1: " + model1.getPerplexity(filepath));
+        System.out.println("model 2: " + model2.getPerplexity(filepath));
+        System.out.println("model 3: " + model3.getPerplexity(filepath));
+        System.out.println("model 4: " + model4.getPerplexity(filepath));
 
 
     }       

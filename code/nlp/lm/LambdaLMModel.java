@@ -12,7 +12,6 @@ import java.util.Set;
 
 public class LambdaLMModel extends Tokenizer implements LMModel{
     protected static HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
-    protected static HashMap<String, Double> unigramCount = new HashMap<>();
     protected static HashMap<String,Integer> wordCount = new HashMap<>();
     protected static int totalWords = 0;
     protected HashMap<String,Integer> sumWords;
@@ -29,25 +28,6 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         // take bigram count
         bigramCounts(words);
     }
-
-    public double bigramProbLambda(String first, String second, double lambda) {
-        HashMap <String, Integer> secondHash = bigramCount.get(first); 
-        if (secondHash.get(second) == null) {
-            return 0.0;
-        }
-        //gets the bigram count of (first, second)
-        Integer bCount = secondHash.get(second); 
-        if (bCount == null) {
-            return 0.0;
-        }
-        Integer secondWords = bigramCount.get(first).get(second);
-        Integer allBigrams = bigramCount.get(first).size();
-        Integer sumBigram = sumWords.get(first);
-        Double numerator = (secondWords + lambda);
-        Double denominator = (allBigrams * lambda) + sumBigram;
-        return (numerator / denominator);
-    }
-
 
 
     // HELPER FUNCTIONS!!!!
@@ -80,12 +60,10 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             if (uniqueBigramProbs.add(bigramProbString)) {
                 // It was successfully added to the set, so it's unique
                 sumLogProb += logProb;
-                System.out.println(bigramProbString);
             }
 
 
         }
-        System.out.println("Log Prob:" + sumLogProb);
         return sumLogProb;
     }
 	/**
@@ -105,8 +83,12 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         if (bCount == null) {
             return 0.0;
         }
+        Integer secondWords = bigramCount.get(first).get(second);
+        Integer allBigrams = bigramCount.get(first).size();
         Integer sumBigram = sumWords.get(first);
-        return ((double)bCount / (double)sumBigram);
+        Double numerator = (secondWords + lambda);
+        Double denominator = (allBigrams * lambda) + sumBigram;
+        return (numerator / denominator);
     }
         
     public void bigramCounts(List<String>words) {
@@ -160,10 +142,6 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         return perplexity;
     }
 
-    public double getUnigramIndividual (String word) {
-        return wordCount.get(word)/totalWords;
-    }
-
     public static void writeToFile(List<String> words, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             // Write each word from the list to the file
@@ -182,17 +160,18 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
 
     public static void main(String[] args) {
-        Tokenizer token = new Tokenizer();
-        
-        List<String> words = token.processFile("./././data/test1.txt");
-        String outputFilePath = "./././data/processed_output1.txt";
-        LambdaLMModel model = new LambdaLMModel(outputFilePath, 0.0);
+        String filepath = "./././data/development.txt";
 
-        writeToFile(words, outputFilePath);
-        model.bigramCounts(words);
-        System.out.println(model.getPerplexity("./././data/test1.txt"));
-
-
+        LambdaLMModel model1 = new LambdaLMModel(filepath, 0.1);
+        LambdaLMModel model2 = new LambdaLMModel(filepath, 0.01);
+        LambdaLMModel model3 = new LambdaLMModel(filepath, 0.001);
+        LambdaLMModel model4 = new LambdaLMModel(filepath, 0.0001);
+        System.out.println("Lambda Perplexity");
+        System.out.println("-------------------------------");
+        System.out.println("model 1: " + model1.getPerplexity(filepath));
+        System.out.println("model 2: " + model2.getPerplexity(filepath));
+        System.out.println("model 3: " + model3.getPerplexity(filepath));
+        System.out.println("model 4: " + model4.getPerplexity(filepath));
     }       
 }
 	
