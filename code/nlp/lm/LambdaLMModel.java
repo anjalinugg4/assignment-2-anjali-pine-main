@@ -166,13 +166,22 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         LambdaLMModel model2 = new LambdaLMModel(filepath, 0.01);
         LambdaLMModel model3 = new LambdaLMModel(filepath, 0.001);
         LambdaLMModel model4 = new LambdaLMModel(filepath, 0.0001);
-        
+        LambdaLMModel model5 = new LambdaLMModel(filepath, 0.00001);
+        LambdaLMModel model6 = new LambdaLMModel(filepath, 0.000001);
+        LambdaLMModel model7 = new LambdaLMModel(filepath, 0.0000001);
+        LambdaLMModel model8 = new LambdaLMModel(filepath, 0.00000001);
+
+
         System.out.println("Lambda Perplexity");
         System.out.println("-------------------------------");
         System.out.println("model 1: " + model1.getPerplexity(filepath));
         System.out.println("model 2: " + model2.getPerplexity(filepath));
         System.out.println("model 3: " + model3.getPerplexity(filepath));
         System.out.println("model 4: " + model4.getPerplexity(filepath));
+        System.out.println("model 5: " + model5.getPerplexity(filepath));
+        System.out.println("model 6: " + model6.getPerplexity(filepath));
+        System.out.println("model 7: " + model7.getPerplexity(filepath));
+        System.out.println("model 8: " + model8.getPerplexity(filepath));
     }       
 }
 	

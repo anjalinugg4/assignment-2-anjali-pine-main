@@ -230,6 +230,8 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         DiscountLMModel model2 = new DiscountLMModel(filepath, 0.9);
         DiscountLMModel model3 = new DiscountLMModel(filepath, 0.75);
         DiscountLMModel model4 = new DiscountLMModel(filepath, 0.5);
+        DiscountLMModel model5 = new DiscountLMModel(filepath, 0.25);
+        DiscountLMModel model6 = new DiscountLMModel(filepath, 0.1);
 
         System.out.println("Discount Perplexity");
         System.out.println("-------------------------------");
@@ -237,6 +239,8 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         System.out.println("model 2: " + model2.getPerplexity(filepath));
         System.out.println("model 3: " + model3.getPerplexity(filepath));
         System.out.println("model 4: " + model4.getPerplexity(filepath));
+        System.out.println("model 5: " + model5.getPerplexity(filepath));
+        System.out.println("model 6: " + model6.getPerplexity(filepath));
 
 
     }       
