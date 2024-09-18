@@ -202,7 +202,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
     public static void main(String[] args) {
         String filepath = "./././data/training.txt";
-        String devFile = "./././data/development.txt";
+        String devFile = "./././data/testing.txt";
 
         LambdaLMModel model1 = new LambdaLMModel(filepath, 0.1);
         LambdaLMModel model2 = new LambdaLMModel(filepath, 0.01);

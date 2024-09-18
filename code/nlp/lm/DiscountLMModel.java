@@ -38,6 +38,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     }
 
 
+
     // HELPER FUNCTIONS!!!!
     // ******************************************************************** //
 
@@ -45,6 +46,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
      * get unigram probabilities of every word in text file
      * @param words
      */
+    
     public void findUnigram(List<String>words) {
         totalWords = 0;
         for (String word:words){
@@ -80,6 +82,8 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @param sentWords the words in the sentence.  sentWords should NOT contain <s> or </s>.
 	 * @return the log probability
 	 */
+
+    
 	public double logProb(ArrayList<String> sentWords) {
         Double sumLogProb = 0.0;
         Set<String> uniqueBigramProbs = new HashSet<>();
@@ -122,6 +126,9 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @param second
 	 * @return the probability of the second word given the first word (as a probability)
 	 */
+    
+
+    
 	public double getBigramProb(String first, String second) {
         // find reserved mass
         if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
@@ -149,7 +156,9 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
             return multAlpha;
     }
-        
+      
+
+    
     public void bigramCounts(List<String>words) {
 
         for (int i = 0; i < words.size() -1; i ++) {
@@ -220,6 +229,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	public double getPerplexity(String filename) {
         // ArrayList<String>words = processFile(filename);
         File file = new File(filename);
+        Integer length = 0; 
         Double sumLogProb = 0.0;
         // Try to read the file
         try {
@@ -228,6 +238,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
                 String line = scanner.nextLine();
                 ArrayList<String> wordsSentences = splitText(line);
                 sumLogProb += logProb(wordsSentences);
+                length += wordsSentences.size()+1; 
             }
                 scanner.close();
             }
@@ -236,7 +247,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
             System.out.println("File not found: " + filename);
             }
 
-        Double perplexity = Math.pow(10.0, (-1 * sumLogProb / bigramCount.keySet().size()));
+        Double perplexity = Math.pow(10.0, (-1 * sumLogProb / length));
 
         return perplexity;
     }
@@ -265,7 +276,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     public static void main(String[] args) {
         
         String filepath = "./././data/training.txt";
-        String devFile = "./././data/development.txt";
+        String devFile = "./././data/testing.txt";
 
         DiscountLMModel model1 = new DiscountLMModel(filepath, 0.99);
         DiscountLMModel model2 = new DiscountLMModel(filepath, 0.9);
@@ -282,6 +293,8 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         System.out.println("model 4: " + model4.getPerplexity(devFile));
         System.out.println("model 5: " + model5.getPerplexity(devFile));
         System.out.println("model 6: " + model6.getPerplexity(devFile));
+
+        //System.out.println(model1.sumUnigram); 
 
 
     }       
