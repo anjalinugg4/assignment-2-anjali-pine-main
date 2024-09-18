@@ -22,6 +22,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     protected HashMap<String,Integer> sumWords;
     String filename;
     double discount;
+    Double sumUnigram = 0.0;
 
     DiscountLMModel(String filename, double discount) {
         this.filename = filename;
@@ -34,6 +35,9 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         // take bigram and unigram count
         bigramCounts(words);
         findUnigram(words); 
+        for (Double uniProb : unigramCount.values()) {
+            sumUnigram += uniProb; // Precompute sumUnigram once
+        }
         vocabs = new HashSet<String>(bigramCount.keySet());
     }
 
@@ -62,6 +66,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         for (int count : wordCount.values()) {
             totalWords += count;
         }
+        // printUnigramCounts();
 
         // New HashMap to store words and their probabilities
         
@@ -73,6 +78,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
             double probability = (double) count / totalWords;  // Calculate probability
             unigramCount.put(word, probability);  // Add word and its probability
         }
+
     }
 
 
@@ -83,7 +89,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @return the log probability
 	 */
 
-    
+
 	public double logProb(ArrayList<String> sentWords) {
         Double sumLogProb = 0.0;
         Set<String> uniqueBigramProbs = new HashSet<>();
@@ -139,11 +145,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 
         Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
 
-        // printUnigramCounts();
-        Double sumUnigram = 0.0; 
-        for(Double uni: unigramCount.values()) {
-            sumUnigram += uni;
-        }
+
 
         Double alpha = (double)(reservedMass)/(1 - sumUnigram);
         Double multAlpha = alpha * getUnigramIndividual(first);
@@ -276,7 +278,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     public static void main(String[] args) {
         
         String filepath = "./././data/training.txt";
-        String devFile = "./././data/testing.txt";
+        String devFile = "./././data/testing";
 
         DiscountLMModel model1 = new DiscountLMModel(filepath, 0.99);
         DiscountLMModel model2 = new DiscountLMModel(filepath, 0.9);

@@ -44,6 +44,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 	 * @param sentWords the words in the sentence.  sentWords should NOT contain <s> or </s>.
 	 * @return the log probability
 	 */
+    
 	public double logProb(ArrayList<String> sentWords) {
         Double sumLogProb = 0.0;
         Set<String> uniqueBigramProbs = new HashSet<>();
@@ -86,23 +87,40 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 	 * @param second
 	 * @return the probability of the second word given the first word (as a probability)
 	 */
-	public double getBigramProb(String first, String second) {
-        HashMap <String, Integer> secondHash = bigramCount.get(first); 
-        if (secondHash.get(second) == null) {
-            return 0.0;
+    public double getBigramProb(String first, String second) {
+        HashMap<String, Integer> secondHash = bigramCount.get(first);
+        
+        if (secondHash == null || !secondHash.containsKey(second)) {
+            return 0.0;  // Handle missing bigram
         }
-        //gets the bigram count of (first, second)
-        Integer bCount = secondHash.get(second); 
-        if (bCount == null) {
-            return 0.0;
-        }
-        Integer secondWords = bigramCount.get(first).get(second);
-        Integer allBigrams = bigramCount.get(first).size();
+    
+        Integer bigramCountValue = secondHash.get(second);
         Integer sumBigram = sumWords.get(first);
-        Double numerator = (secondWords + lambda);
-        Double denominator = (allBigrams * lambda) + sumBigram;
-        return (numerator / denominator);
+        
+        // Optimized lambda-smoothing calculation
+        Double numerator = bigramCountValue + lambda;
+        Double denominator = sumBigram + lambda * vocabs.size();  // Use vocab size for unseen smoothing
+    
+        return numerator / denominator;
     }
+    
+	// public double getBigramProb(String first, String second) {
+    //     HashMap <String, Integer> secondHash = bigramCount.get(first); 
+    //     if (secondHash.get(second) == null) {
+    //         return 0.0;
+    //     }
+    //     //gets the bigram count of (first, second)
+    //     Integer bCount = secondHash.get(second); 
+    //     if (bCount == null) {
+    //         return 0.0;
+    //     }
+    //     Integer secondWords = bigramCount.get(first).get(second);
+    //     Integer allBigrams = bigramCount.get(first).size();
+    //     Integer sumBigram = sumWords.get(first);
+    //     Double numerator = (secondWords + lambda);
+    //     Double denominator = (allBigrams * lambda) + sumBigram;
+    //     return (numerator / denominator);
+    // }
         
     public void bigramCounts(List<String>words) {
 
@@ -204,7 +222,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
     public static void main(String[] args) {
         String filepath = "./././data/training.txt";
-        String devFile = "./././data/testing.txt";
+        String devFile = "./././data/testing";
 
         LambdaLMModel model1 = new LambdaLMModel(filepath, 0.1);
         LambdaLMModel model2 = new LambdaLMModel(filepath, 0.01);
