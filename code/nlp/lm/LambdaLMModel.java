@@ -149,7 +149,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         ArrayList<String>words = processFile(filename);
         Integer numWords = words.size();
 
-        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / getTotalBigramCount()));
+        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / bigramCount.keySet().size()));
 
         return perplexity;
     }

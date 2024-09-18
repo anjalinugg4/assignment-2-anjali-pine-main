@@ -208,8 +208,9 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	public double getPerplexity(String filename) {
         ArrayList<String>words = processFile(filename);
         Integer numWords = words.size();
+        Integer numBig = numWords - 1;
 
-        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / getTotalBigramCount()));
+        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / bigramCount.keySet().size()));
 
         return perplexity;
     }
