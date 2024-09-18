@@ -2,6 +2,9 @@ package nlp.lm;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,6 +17,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     HashMap<String, HashMap<String, Integer>> bigramCount = new HashMap<>();
     HashMap<String, Double> unigramCount = new HashMap<>();
     HashMap<String,Integer> wordCount = new HashMap<>();
+    HashSet<String> vocabs = new HashSet<>();
     int totalWords = 0;
     protected HashMap<String,Integer> sumWords;
     String filename;
@@ -30,7 +34,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         // take bigram and unigram count
         bigramCounts(words);
         findUnigram(words); 
-
+        vocabs = new HashSet<String>(bigramCount.keySet());
     }
 
 
@@ -79,13 +83,21 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	public double logProb(ArrayList<String> sentWords) {
         Double sumLogProb = 0.0;
         Set<String> uniqueBigramProbs = new HashSet<>();
-
+        sentWords.add(0, "<s>");
+        sentWords.add("</s>");
+        
         for (int i = 0; i < sentWords.size() - 1; i++) {
             String first = sentWords.get(i);
             String second = sentWords.get(i + 1);
+
+            if(!vocabs.contains(first)) {
+                first = "<UNK>";
+            } 
+            if(!vocabs.contains(second)) {
+                second = "<UNK>";
+            } 
+
             Double bigramProb = getBigramProb(first, second);
-
-
             Double logProb = 1e-10; 
             if (bigramProb != 0.0) {
                 logProb = Math.log10(bigramProb);
@@ -198,7 +210,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         return totalBigrams;
     }
 
-	/**
+		/**
 	 * Given a text file, calculate the perplexity of the text file, that is the negative average per word log
 	 * probability
 	 * 
@@ -206,11 +218,25 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @return the perplexity of the text in file based on the LM
 	 */
 	public double getPerplexity(String filename) {
-        ArrayList<String>words = processFile(filename);
-        Integer numWords = words.size();
-        Integer numBig = numWords - 1;
+        // ArrayList<String>words = processFile(filename);
+        File file = new File(filename);
+        Double sumLogProb = 0.0;
+        // Try to read the file
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                ArrayList<String> wordsSentences = splitText(line);
+                sumLogProb += logProb(wordsSentences);
+            }
+                scanner.close();
+            }
 
-        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / bigramCount.keySet().size()));
+        catch (FileNotFoundException e) {
+            System.out.println("File not found: " + filename);
+            }
+
+        Double perplexity = Math.pow(10.0, (-1 * sumLogProb / bigramCount.keySet().size()));
 
         return perplexity;
     }

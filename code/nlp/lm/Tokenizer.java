@@ -41,6 +41,29 @@ public class Tokenizer {
         return tokenList;
     }
 
+
+    // public ArrayList<String> parseSentence(String filePath) {
+    //     File file = new File(filePath);
+    //     ArrayList<String> sentences = new ArrayList<>();
+    //     // comment
+    //     // Try to read the file
+    //     try {
+    //         Scanner scanner = new Scanner(file);
+    //         while (scanner.hasNextLine()) {
+    //             String line = scanner.nextLine();
+    //             line = "<s> " + line + " </s>";
+    //             // Tokenize each line
+    //             sentences.addAll(splitText(line));
+    //             }
+    //             scanner.close();
+    //         }
+
+    //     catch (FileNotFoundException e) {
+    //         System.out.println("File not found: " + filePath);
+    //         }
+    //     ArrayList<String> replaced = getUnknown(words);
+    //     return replaced;
+    // }
     public ArrayList<String> getUnknown(List<String> words){
         Set<String> set = new HashSet<>();
         ArrayList<String> replaceUnknown = new ArrayList<>();
