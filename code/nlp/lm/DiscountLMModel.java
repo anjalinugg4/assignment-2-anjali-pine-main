@@ -238,7 +238,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
                 String line = scanner.nextLine();
                 ArrayList<String> wordsSentences = splitText(line);
                 sumLogProb += logProb(wordsSentences);
-                length += wordsSentences.size()+1; 
+                length += wordsSentences.size()-1; 
             }
                 scanner.close();
             }

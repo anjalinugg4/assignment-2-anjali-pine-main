@@ -162,6 +162,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 	public double getPerplexity(String filename) {
         // ArrayList<String>words = processFile(filename);
         File file = new File(filename);
+        Integer length = 0; 
         Double sumLogProb = 0.0;
         // Try to read the file
         try {
@@ -170,6 +171,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
                 String line = scanner.nextLine();
                 ArrayList<String> wordsSentences = splitText(line);
                 sumLogProb += logProb(wordsSentences);
+                length += wordsSentences.size()-1; 
             }
                 scanner.close();
             }
@@ -178,7 +180,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             System.out.println("File not found: " + filename);
             }
 
-        Double perplexity = Math.pow(10.0, (-1 * sumLogProb / bigramCount.keySet().size()));
+        Double perplexity = Math.pow(10.0, (-1 * sumLogProb / length));
 
         return perplexity;
     }
