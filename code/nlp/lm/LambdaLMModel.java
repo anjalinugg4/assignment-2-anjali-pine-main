@@ -125,6 +125,18 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             System.out.println("---------------------------");
         }
     }
+    public int getTotalBigramCount() {
+        int totalBigrams = 0;
+    
+        // Iterate over each first word in the bigramCount map
+        for (HashMap<String, Integer> secondHash : bigramCount.values()) {
+            // Add the number of second words (bigrams) for the current first word
+            totalBigrams += secondHash.size();
+        }
+    
+        return totalBigrams;
+    }
+    
 
 	/**
 	 * Given a text file, calculate the perplexity of the text file, that is the negative average per word log
@@ -137,7 +149,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         ArrayList<String>words = processFile(filename);
         Integer numWords = words.size();
 
-        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / numWords));
+        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / getTotalBigramCount()));
 
         return perplexity;
     }

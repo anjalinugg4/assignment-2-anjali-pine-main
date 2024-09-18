@@ -186,6 +186,18 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
     }
 
+    public int getTotalBigramCount() {
+        int totalBigrams = 0;
+    
+        // Iterate over each first word in the bigramCount map
+        for (HashMap<String, Integer> secondHash : bigramCount.values()) {
+            // Add the number of second words (bigrams) for the current first word
+            totalBigrams += secondHash.size();
+        }
+    
+        return totalBigrams;
+    }
+
 	/**
 	 * Given a text file, calculate the perplexity of the text file, that is the negative average per word log
 	 * probability
@@ -197,7 +209,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         ArrayList<String>words = processFile(filename);
         Integer numWords = words.size();
 
-        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / numWords));
+        Double perplexity = Math.pow(10.0, (-1 * (logProb(words)) / getTotalBigramCount()));
 
         return perplexity;
     }
@@ -224,7 +236,9 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     // ******************************************************************** //
 
     public static void main(String[] args) {
-        String filepath = "./././data/development.txt";
+        
+        String filepath = "./././data/training.txt";
+        String devFile = "./././data/development.txt";
 
         DiscountLMModel model1 = new DiscountLMModel(filepath, 0.99);
         DiscountLMModel model2 = new DiscountLMModel(filepath, 0.9);
@@ -235,12 +249,12 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 
         System.out.println("Discount Perplexity");
         System.out.println("-------------------------------");
-        System.out.println("model 1: " + model1.getPerplexity(filepath));
-        System.out.println("model 2: " + model2.getPerplexity(filepath));
-        System.out.println("model 3: " + model3.getPerplexity(filepath));
-        System.out.println("model 4: " + model4.getPerplexity(filepath));
-        System.out.println("model 5: " + model5.getPerplexity(filepath));
-        System.out.println("model 6: " + model6.getPerplexity(filepath));
+        System.out.println("model 1: " + model1.getPerplexity(devFile));
+        System.out.println("model 2: " + model2.getPerplexity(devFile));
+        System.out.println("model 3: " + model3.getPerplexity(devFile));
+        System.out.println("model 4: " + model4.getPerplexity(devFile));
+        System.out.println("model 5: " + model5.getPerplexity(devFile));
+        System.out.println("model 6: " + model6.getPerplexity(devFile));
 
 
     }       
