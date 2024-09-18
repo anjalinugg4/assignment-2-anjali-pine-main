@@ -201,7 +201,8 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
 
     public static void main(String[] args) {
-        String filepath = "./././data/development.txt";
+        String filepath = "./././data/training.txt";
+        String devFile = "./././data/development.txt";
 
         LambdaLMModel model1 = new LambdaLMModel(filepath, 0.1);
         LambdaLMModel model2 = new LambdaLMModel(filepath, 0.01);
@@ -215,14 +216,14 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
         System.out.println("Lambda Perplexity");
         System.out.println("-------------------------------");
-        System.out.println("model 1: " + model1.getPerplexity(filepath));
-        System.out.println("model 2: " + model2.getPerplexity(filepath));
-        System.out.println("model 3: " + model3.getPerplexity(filepath));
-        System.out.println("model 4: " + model4.getPerplexity(filepath));
-        System.out.println("model 5: " + model5.getPerplexity(filepath));
-        System.out.println("model 6: " + model6.getPerplexity(filepath));
-        System.out.println("model 7: " + model7.getPerplexity(filepath));
-        System.out.println("model 8: " + model8.getPerplexity(filepath));
+        System.out.println("model 1: " + model1.getPerplexity(devFile));
+        System.out.println("model 2: " + model2.getPerplexity(devFile));
+        System.out.println("model 3: " + model3.getPerplexity(devFile));
+        System.out.println("model 4: " + model4.getPerplexity(devFile));
+        System.out.println("model 5: " + model5.getPerplexity(devFile));
+        System.out.println("model 6: " + model6.getPerplexity(devFile));
+        System.out.println("model 7: " + model7.getPerplexity(devFile));
+        System.out.println("model 8: " + model8.getPerplexity(devFile));
     }       
 }
 	
