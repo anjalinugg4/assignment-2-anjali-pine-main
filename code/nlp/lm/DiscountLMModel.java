@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 
         // tokenize
         ArrayList<String> words = processFile(filename);
-
+        Collections.shuffle(words);
         // take bigram and unigram count
         bigramCounts(words);
         findUnigram(words); 
@@ -274,20 +275,20 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     }
 
     // ******************************************************************** //
-
     public static void main(String[] args) {
-        
-        String filepath = "./././data/training.txt";
-        String devFile = "./././data/testing";
-
+        // Paths for training, development, and testing files
+        String filepath = "data/training.txt";
+        String devFile = "data/development";
+        String testFile = "data/testing";
+    
         DiscountLMModel model1 = new DiscountLMModel(filepath, 0.99);
         DiscountLMModel model2 = new DiscountLMModel(filepath, 0.9);
         DiscountLMModel model3 = new DiscountLMModel(filepath, 0.75);
         DiscountLMModel model4 = new DiscountLMModel(filepath, 0.5);
         DiscountLMModel model5 = new DiscountLMModel(filepath, 0.25);
         DiscountLMModel model6 = new DiscountLMModel(filepath, 0.1);
-
-        System.out.println("Discount Perplexity");
+    
+        System.out.println("Discount Perplexity on Development Set");
         System.out.println("-------------------------------");
         System.out.println("model 1: " + model1.getPerplexity(devFile));
         System.out.println("model 2: " + model2.getPerplexity(devFile));
@@ -295,11 +296,17 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         System.out.println("model 4: " + model4.getPerplexity(devFile));
         System.out.println("model 5: " + model5.getPerplexity(devFile));
         System.out.println("model 6: " + model6.getPerplexity(devFile));
-
-        //System.out.println(model1.sumUnigram); 
-
-
-    }       
+    
+        System.out.println("Discount Perplexity on Test Set");
+        System.out.println("-------------------------------");
+        System.out.println("model 1: " + model1.getPerplexity(testFile));
+        System.out.println("model 2: " + model2.getPerplexity(testFile));
+        System.out.println("model 3: " + model3.getPerplexity(testFile));
+        System.out.println("model 4: " + model4.getPerplexity(testFile));
+        System.out.println("model 5: " + model5.getPerplexity(testFile));
+        System.out.println("model 6: " + model6.getPerplexity(testFile));
+    }
+      
 }
 	
 

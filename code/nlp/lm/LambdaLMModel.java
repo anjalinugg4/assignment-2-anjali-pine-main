@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
         // tokenize
         ArrayList<String> words = processFile(filename);
+        Collections.shuffle(words);
+ 
         // take bigram count
         bigramCounts(words);
         vocabs = new HashSet<String>(bigramCount.keySet());
