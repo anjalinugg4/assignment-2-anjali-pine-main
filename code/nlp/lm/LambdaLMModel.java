@@ -1,3 +1,9 @@
+/**
+ * Author: Anjali Nuggehalli and Pine Netcharussaeng
+ * Assignment 2B
+ * Date: September 18, 2024
+ */
+
 package nlp.lm;
 
 import java.io.BufferedWriter;
@@ -12,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
+
 
 
 public class LambdaLMModel extends Tokenizer implements LMModel{
@@ -78,11 +85,10 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
                 // It was successfully added to the set, so it's unique
                 sumLogProb += logProb;
             }
-
-
         }
         return sumLogProb;
     }
+
 	/**
 	 * Returns p(second | first)
 	 * 
@@ -106,24 +112,19 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
     
         return numerator / denominator;
     }
-    
-	// public double getBigramProb(String first, String second) {
-    //     HashMap <String, Integer> secondHash = bigramCount.get(first); 
-    //     if (secondHash.get(second) == null) {
-    //         return 0.0;
-    //     }
-    //     //gets the bigram count of (first, second)
-    //     Integer bCount = secondHash.get(second); 
-    //     if (bCount == null) {
-    //         return 0.0;
-    //     }
-    //     Integer secondWords = bigramCount.get(first).get(second);
-    //     Integer allBigrams = bigramCount.get(first).size();
-    //     Integer sumBigram = sumWords.get(first);
-    //     Double numerator = (secondWords + lambda);
-    //     Double denominator = (allBigrams * lambda) + sumBigram;
-    //     return (numerator / denominator);
-    // }
+
+    /**
+     * Calculates the bigram counts from a list of words and stores the results 
+     * in a bigram frequency map.
+     *
+     * This method processes a list of words to compute the frequency of bigrams 
+     * (word pairs). For each consecutive pair of words, it updates the bigram 
+     * count in a nested HashMap, where the key is the first word and the value 
+     * is another HashMap that stores the second word and its count. It also 
+     * updates the total occurrences of the first word in a separate map.
+     *
+     * @param words the list of words to generate bigram counts from
+     */
         
     public void bigramCounts(List<String>words) {
 
@@ -139,6 +140,15 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         }
     }
 
+    /**
+     * Prints the bigram counts stored in the bigram frequency map.
+     *
+     * This method iterates through the bigramCount map, printing each bigram 
+     * (first word and second word pair) along with its corresponding frequency count.
+     * It prints the first word followed by the second word and the count of how many 
+     * times the bigram appeared in the input text. The output is formatted for 
+     * readability, with a separator between different bigram groups.
+     */
     public void printBigramCounts() {
         System.out.println("Bigram Counts:");
         System.out.println("==============");
@@ -160,6 +170,18 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             System.out.println("---------------------------");
         }
     }
+
+    /**
+     * Returns the total number of unique bigrams in the bigram frequency map.
+     *
+     * This method calculates the total number of unique bigram pairs stored 
+     * in the bigramCount map. It iterates through the outer HashMap (which holds 
+     * the first words) and sums up the sizes of the inner HashMaps (which hold 
+     * the second words and their counts), thereby counting the total number of 
+     * bigrams.
+     *
+     * @return the total number of unique bigrams
+     */
     public int getTotalBigramCount() {
         int totalBigrams = 0;
     
@@ -168,7 +190,6 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
             // Add the number of second words (bigrams) for the current first word
             totalBigrams += secondHash.size();
         }
-    
         return totalBigrams;
     }
     
@@ -206,6 +227,13 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         return perplexity;
     }
 
+
+    /**
+     * Writes a list of words to a specified file.
+     *
+     * @param words the list of words to write
+     * @param outputFilePath the file path to write the words to
+     */
     public void writeToFile(List<String> words, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             // Write each word from the list to the file
@@ -252,4 +280,22 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 	
 
 
-        
+
+
+// public double getBigramProb(String first, String second) {
+//     HashMap <String, Integer> secondHash = bigramCount.get(first); 
+//     if (secondHash.get(second) == null) {
+//         return 0.0;
+//     }
+//     //gets the bigram count of (first, second)
+//     Integer bCount = secondHash.get(second); 
+//     if (bCount == null) {
+//         return 0.0;
+//     }
+//     Integer secondWords = bigramCount.get(first).get(second);
+//     Integer allBigrams = bigramCount.get(first).size();
+//     Integer sumBigram = sumWords.get(first);
+//     Double numerator = (secondWords + lambda);
+//     Double denominator = (allBigrams * lambda) + sumBigram;
+//     return (numerator / denominator);
+// }

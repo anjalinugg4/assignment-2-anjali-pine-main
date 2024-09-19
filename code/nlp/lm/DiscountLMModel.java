@@ -1,3 +1,9 @@
+/**
+ * Author: Anjali Nuggehalli and Pine Netcharussaeng
+ * Assignment 2B
+ * Date: September 18, 2024
+ */
+
 package nlp.lm;
 
 import java.io.BufferedWriter;
@@ -51,7 +57,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
      * get unigram probabilities of every word in text file
      * @param words
      */
-    
     public void findUnigram(List<String>words) {
         totalWords = 0;
         for (String word:words){
@@ -67,12 +72,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         for (int count : wordCount.values()) {
             totalWords += count;
         }
-        // printUnigramCounts();
-
-        // New HashMap to store words and their probabilities
-        
-
-        // Calculate the probability for each word and store it in the new HashMap
         for (HashMap.Entry<String, Integer> entry : wordCount.entrySet()) {
             String word = entry.getKey();
             int count = entry.getValue();
@@ -89,8 +88,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @param sentWords the words in the sentence.  sentWords should NOT contain <s> or </s>.
 	 * @return the log probability
 	 */
-
-
 	public double logProb(ArrayList<String> sentWords) {
         Double sumLogProb = 0.0;
         Set<String> uniqueBigramProbs = new HashSet<>();
@@ -133,9 +130,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @param second
 	 * @return the probability of the second word given the first word (as a probability)
 	 */
-    
-
-    
 	public double getBigramProb(String first, String second) {
         // find reserved mass
         if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
@@ -143,11 +137,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
         Integer numFollows = bigramCount.get(first).get(second);
         Integer allBigrams = sumWords.get(first);
-
         Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
-
-
-
         Double alpha = (double)(reservedMass)/(1 - sumUnigram);
         Double multAlpha = alpha * getUnigramIndividual(first);
 
@@ -159,9 +149,12 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
             return multAlpha;
     }
-      
 
-    
+    /**
+     * Counts the frequency of bigrams in a list of words.
+     *
+     * @param words the list of words to process
+     */
     public void bigramCounts(List<String>words) {
 
         for (int i = 0; i < words.size() -1; i ++) {
@@ -175,6 +168,9 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
     }
 
+    /**
+     * Prints the bigram counts stored in the bigramCount map.
+     */
     public void printBigramCounts() {
         System.out.println("Bigram Counts:");
         System.out.println("==============");
@@ -197,6 +193,10 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
     }
 
+
+    /**
+    * Prints the unigram counts stored in the unigramCount map.
+    */
     public void printUnigramCounts() {
         System.out.println("Unigram Counts:");
         System.out.println("==============");
@@ -210,6 +210,15 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         }
     }
 
+
+    /**
+     * Returns the total number of bigram occurrences.
+     *
+     * This method sums the total occurrences of all bigrams (word pairs) 
+     * across the entire bigramCount map. 
+     *
+     * @return the total number of bigram occurrences
+     */
     public int getTotalBigramCount() {
         int totalBigrams = 0;
     
@@ -222,7 +231,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         return totalBigrams;
     }
 
-		/**
+	/**
 	 * Given a text file, calculate the perplexity of the text file, that is the negative average per word log
 	 * probability
 	 * 
@@ -255,12 +264,22 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         return perplexity;
     }
 
+    /**
+     * Returns the relative frequency of a given word (unigram).
+     *
+     * @param word the word to retrieve the unigram frequency for
+     * @return the frequency of the word as a proportion of the total word count
+     */
     public double getUnigramIndividual (String word) {
         return wordCount.get(word)/totalWords;
     }
 
-
-
+    /**
+     * Writes a list of words to a specified file.
+     *
+     * @param words the list of words to write
+     * @param outputFilePath the file path to write the words to
+     */
     public static void writeToFile(List<String> words, String outputFilePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
             // Write each word from the list to the file
