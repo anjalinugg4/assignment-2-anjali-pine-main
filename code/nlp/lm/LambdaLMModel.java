@@ -37,11 +37,10 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
         // tokenize
         ArrayList<String> words = processFile(filename);
-        Collections.shuffle(words);
+        // Collections.shuffle(words);
  
         // take bigram count
         bigramCounts(words);
-        
         vocabs = new HashSet<String>(bigramCount.keySet());
     }
 
@@ -64,6 +63,9 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         
         for (int i = 0; i < sentWords.size() - 1; i++) {
             String first = sentWords.get(i);
+            if (first.equals("</s>")) {
+                continue;
+            }
             String second = sentWords.get(i + 1);
 
             if(!vocabs.contains(first)) {
@@ -99,17 +101,18 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 	 */
     public double getBigramProb(String first, String second) {
         HashMap<String, Integer> secondHash = bigramCount.get(first);
-        
+        Integer sumBigram = sumWords.get(first);
+        Double denominator = sumBigram + lambda * vocabs.size();  // Use vocab size for unseen smoothing
         if (secondHash == null || !secondHash.containsKey(second)) {
-            return 0.0;  // Handle missing bigram
+            return lambda/denominator;  // Handle missing bigram
         }
     
         Integer bigramCountValue = secondHash.get(second);
-        Integer sumBigram = sumWords.get(first);
+        
         
         // Optimized lambda-smoothing calculation
         Double numerator = bigramCountValue + lambda;
-        Double denominator = sumBigram + lambda * vocabs.size();  // Use vocab size for unseen smoothing
+        
     
         return numerator / denominator;
     }
@@ -131,6 +134,9 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
         for (int i = 0; i < words.size() -1; i ++) {
             String first = words.get(i);
+            if (first.equals("</s>")) {
+                continue;
+            }
             String second = words.get(i+1);
 
             bigramCount.putIfAbsent(first, new HashMap<>());
@@ -253,9 +259,11 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
 
 
     public static void main(String[] args) {
-        String filepath = "./././data/training.txt";
-        String devFile = "./././data/testing";
-
+        // Paths for training, development, and testing files
+        String filepath = "data/training.txt";
+        String devFile = "data/development";
+        String testFile = "data/testing";
+    
         LambdaLMModel model1 = new LambdaLMModel(filepath, 0.1);
         LambdaLMModel model2 = new LambdaLMModel(filepath, 0.01);
         LambdaLMModel model3 = new LambdaLMModel(filepath, 0.001);
@@ -264,9 +272,8 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         LambdaLMModel model6 = new LambdaLMModel(filepath, 0.000001);
         LambdaLMModel model7 = new LambdaLMModel(filepath, 0.0000001);
         LambdaLMModel model8 = new LambdaLMModel(filepath, 0.00000001);
-
-
-        System.out.println("Lambda Perplexity");
+    
+        System.out.println("Lambda Perplexity on Development Set");
         System.out.println("-------------------------------");
         System.out.println("model 1: " + model1.getPerplexity(devFile));
         System.out.println("model 2: " + model2.getPerplexity(devFile));
@@ -276,7 +283,18 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
         System.out.println("model 6: " + model6.getPerplexity(devFile));
         System.out.println("model 7: " + model7.getPerplexity(devFile));
         System.out.println("model 8: " + model8.getPerplexity(devFile));
-    }       
+    
+        System.out.println("Lambda Perplexity on Test Set");
+        System.out.println("-------------------------------");
+        System.out.println("model 1: " + model1.getPerplexity(testFile));
+        System.out.println("model 2: " + model2.getPerplexity(testFile));
+        System.out.println("model 3: " + model3.getPerplexity(testFile));
+        System.out.println("model 4: " + model4.getPerplexity(testFile));
+        System.out.println("model 5: " + model5.getPerplexity(testFile));
+        System.out.println("model 6: " + model6.getPerplexity(testFile));
+        System.out.println("model 7: " + model7.getPerplexity(devFile));
+        System.out.println("model 8: " + model8.getPerplexity(devFile));
+    }
 }
 	
 

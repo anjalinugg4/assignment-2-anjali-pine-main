@@ -39,7 +39,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 
         // tokenize
         ArrayList<String> words = processFile(filename);
-        Collections.shuffle(words);
+        // Collections.shuffle(words);
         // take bigram and unigram count
         bigramCounts(words);
         findUnigram(words); 
@@ -89,6 +89,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 	 * @param sentWords the words in the sentence.  sentWords should NOT contain <s> or </s>.
 	 * @return the log probability
 	 */
+
 	public double logProb(ArrayList<String> sentWords) {
         Double sumLogProb = 0.0;
         Set<String> uniqueBigramProbs = new HashSet<>();
@@ -113,43 +114,66 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
             }
             // Create a string representing the bigram and its probability
             String bigramProbString = "Bigram: (" + first + ", " + second + ") - Probability: " + bigramProb;
-    
+            sumLogProb += logProb;
             // Only print if the bigram-probability pair is not already in the set
-            if (uniqueBigramProbs.add(bigramProbString)) {
-                // It was successfully added to the set, so it's unique
-                sumLogProb += logProb;
-            }
+            // if (uniqueBigramProbs.add(bigramProbString)) {
+            //     // It was successfully added to the set, so it's unique
+            //     sumLogProb += logProb;
+            // }
 
 
         }
         return sumLogProb;
     }
-	/**
-	 * Returns p(second | first)
-	 * 
-	 * @param first
-	 * @param second
-	 * @return the probability of the second word given the first word (as a probability)
-	 */
-	public double getBigramProb(String first, String second) {
-        // find reserved mass
+
+
+     /**
+     * Returns p(second | first) with discount smoothing
+     * 
+     * @param first
+     * @param second
+     * @return the probability of the second word given the first word (as a probability)
+     */
+    public double getBigramProb(String first, String second) {
+    // find reserved mass
         if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
-            return 0.0;
+            Double reservedMass = (double) discount * sumWords.getOrDefault(first, 0);
+            Double alpha = reservedMass / (1 - sumUnigram); 
+            // Back-off to unigram probability of second word
+            return alpha * getUnigramIndividual(second);  
         }
+
+        // If bigram exists, compute discounted probability
         Integer numFollows = bigramCount.get(first).get(second);
         Integer allBigrams = sumWords.get(first);
-        Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
-        Double alpha = (double)(reservedMass)/(1 - sumUnigram);
-        Double multAlpha = alpha * getUnigramIndividual(first);
 
-        if (bigramCount.get(first).containsKey(second)) {
-            Integer countFirstSecond = bigramCount.get(first).get(second);
-            Integer countSecond = wordCount.get(second);
+        // Discounted bigram probability
+        double discountedBigramProb = (numFollows - discount) / (double) allBigrams;
 
-            return (double)(countFirstSecond - discount)/countSecond;
-        }
-            return multAlpha;
+        return discountedBigramProb;
     }
+
+    // public double getBigramProb(String first, String second) {
+    //     // find reserved mass
+    //     if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
+    //         Double reservedMass = (double) discount * sumWords.getOrDefault(first, 0);
+    //         Double alpha = reservedMass / (1 - sumUnigram);
+    //         return alpha * getUnigramIndividual(second);
+    //     }
+    //     Integer numFollows = bigramCount.get(first).get(second);
+    //     Integer allBigrams = sumWords.get(first);
+    //     Double reservedMass = ((double)(discount * numFollows) / (double)allBigrams);
+    //     Double alpha = (double)(reservedMass)/(1 - sumUnigram);
+    //     Double multAlpha = alpha * getUnigramIndividual(first);
+
+    //     if (bigramCount.get(first).containsKey(second)) {
+    //         Integer countFirstSecond = bigramCount.get(first).get(second);
+    //         Integer countSecond = wordCount.get(second);
+
+    //         return (double)(countFirstSecond - discount)/countSecond;
+    //     }
+    //         return multAlpha;
+    // }
 
     /**
      * Counts the frequency of bigrams in a list of words.
@@ -157,9 +181,11 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
      * @param words the list of words to process
      */
     public void bigramCounts(List<String>words) {
-
-        for (int i = 0; i < words.size() -1; i ++) {
+        for (int i = 0; i < words.size() - 1; i ++) {
             String first = words.get(i);
+            if (first.equals("</s>")) {
+                continue;
+            }
             String second = words.get(i+1);
 
             bigramCount.putIfAbsent(first, new HashMap<>());
