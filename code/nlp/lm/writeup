@@ -42,7 +42,7 @@ The best discount on the dev and test set was 0.1, which was the smallest discou
 
 Performance
 Which model is better? Provide some quantitative and/or qualitative arguments (including data or examples) of which approach is better. Make sure to clearly explain your evaluation approach and your arguments.
-For now, discount (add to this)
+The discount model performed significantly better, as evidenced by the lower average perplexities compared to the lambda model. This is because the discount model more effectively reallocates probability mass, especially to rare and unseen events, by reducing the probability of frequent n-grams and redistributing it to less frequent ones. In contrast, the lambda model tends to assign too much probability mass to unseen events without considering their context or frequency, which leads to suboptimal performance.
 Wrap-up
 Very briefly answer the following questions: how long did you spend on this assignment?
 What was the most fun part? least fun part? how would you improve it if I had to give it again?
