@@ -27,6 +27,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     HashSet<String> vocabs = new HashSet<>();
     int totalWords = 0;
     protected HashMap<String,Integer> sumWords;
+    
     String filename;
     double discount;
     Double sumUnigram = 0.0;
