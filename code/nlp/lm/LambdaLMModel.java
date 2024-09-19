@@ -30,7 +30,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
     String filename;
     double lambda;
 
-    LambdaLMModel(String filename, double lambda) {
+    public LambdaLMModel(String filename, double lambda) {
         this.filename = filename;
         this.lambda = lambda;  // Initialize bigramCount as a new HashMap
         this.sumWords = new HashMap<>(); 
@@ -41,6 +41,7 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
  
         // take bigram count
         bigramCounts(words);
+        
         vocabs = new HashSet<String>(bigramCount.keySet());
     }
 
