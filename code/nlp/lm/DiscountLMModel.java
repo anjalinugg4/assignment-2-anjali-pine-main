@@ -31,7 +31,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
     double discount;
     Double sumUnigram = 0.0;
 
-    DiscountLMModel(String filename, double discount) {
+    public DiscountLMModel(String filename, double discount) {
         this.filename = filename;
         this.discount = discount;  // Initialize bigramCount as a new HashMap
         this.sumWords = new HashMap<>();
