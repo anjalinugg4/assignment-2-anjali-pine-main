@@ -49,8 +49,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         vocabs = new HashSet<String>(bigramCount.keySet());
     }
 
-
-
     // HELPER FUNCTIONS!!!!
     // ******************************************************************** //
 
@@ -82,7 +80,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
 
     }
 
-
     /**
 	 * Given a sentence, return the log of the probability of the sentence based on the LM.
 	 * 
@@ -98,6 +95,9 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
         
         for (int i = 0; i < sentWords.size() - 1; i++) {
             String first = sentWords.get(i);
+            if (first.equals("</s>")) {
+                continue;
+            }
             String second = sentWords.get(i + 1);
 
             if(!vocabs.contains(first)) {
@@ -120,8 +120,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
                 // It was successfully added to the set, so it's unique
                 sumLogProb += logProb;
             }
-
-
         }
         return sumLogProb;
     }
@@ -134,25 +132,6 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
      * @param second
      * @return the probability of the second word given the first word (as a probability)
      */
-    // public double getBigramProb(String first, String second) {
-    // // find reserved mass
-    //     if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
-    //         Double reservedMass = (double) discount * sumWords.getOrDefault(first, 0);
-    //         Double alpha = reservedMass / (1 - sumUnigram); 
-    //         // Back-off to unigram probability of second word
-    //         return alpha * getUnigramIndividual(second);  
-    //     }
-
-    //     // If bigram exists, compute discounted probability
-    //     Integer numFollows = bigramCount.get(first).get(second);
-    //     Integer allBigrams = sumWords.get(first);
-
-    //     // Discounted bigram probability
-    //     double discountedBigramProb = (numFollows - discount) / (double) allBigrams;
-
-    //     return discountedBigramProb;
-    // }
-
     public double getBigramProb(String first, String second) {
         // find reserved mass
         if (!bigramCount.containsKey(first) || bigramCount.get(first).get(second) == null) {
@@ -181,7 +160,7 @@ public class DiscountLMModel extends Tokenizer implements LMModel{
      * @param words the list of words to process
      */
     public void bigramCounts(List<String>words) {
-        for (int i = 0; i < words.size() - 1; i ++) {
+        for (int i = 0; i < words.size() - 1; i++) {
             String first = words.get(i);
             if (first.equals("</s>")) {
                 continue;

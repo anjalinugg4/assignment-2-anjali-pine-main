@@ -297,24 +297,3 @@ public class LambdaLMModel extends Tokenizer implements LMModel{
     }
 }
 	
-
-
-
-
-// public double getBigramProb(String first, String second) {
-//     HashMap <String, Integer> secondHash = bigramCount.get(first); 
-//     if (secondHash.get(second) == null) {
-//         return 0.0;
-//     }
-//     //gets the bigram count of (first, second)
-//     Integer bCount = secondHash.get(second); 
-//     if (bCount == null) {
-//         return 0.0;
-//     }
-//     Integer secondWords = bigramCount.get(first).get(second);
-//     Integer allBigrams = bigramCount.get(first).size();
-//     Integer sumBigram = sumWords.get(first);
-//     Double numerator = (secondWords + lambda);
-//     Double denominator = (allBigrams * lambda) + sumBigram;
-//     return (numerator / denominator);
-// }
